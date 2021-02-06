@@ -1,30 +1,26 @@
 {
-  "name": "lnkto.in",
+  "name": "@imcatwhocode/lnktoin",
   "version": "1.0.0",
-  "description": "A link shortener service that does one thing well",
+  "description": "Serverless link shortener",
   "main": "index.js",
-  "repository": "https://github.com/imcatwhocode/lnkto.in",
-  "author": "Dmitry Pepperstein <hi@imcatwhocode.dev>",
-  "license": "MIT",
   "private": true,
   "scripts": {
-    "lint": "eslint . --ext ts",
-    "backend-build": "tsc",
-    "backend-watch": "tsc --watch",
-    "backend-dev": "node build/index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-    "debug": "^4.1.1",
-    "fastify": "^2.14.0"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imcatwhocode/lnkto.in.git"
   },
+  "author": "Dmitry Pepperstein <hi@imcatwhocode.dev>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/imcatwhocode/lnkto.in/issues"
+  },
+  "homepage": "https://github.com/imcatwhocode/lnkto.in#readme",
   "devDependencies": {
-    "@types/debug": "^4.1.5",
-    "@types/node": "^13.13.4",
-    "@typescript-eslint/eslint-plugin": "^2.30.0",
-    "@typescript-eslint/parser": "^2.30.0",
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.2",
-    "typescript": "^3.8.3"
-  }
+    "eslint": "^7.19.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.22.1"
+  },
+  "dependencies": {}
 }

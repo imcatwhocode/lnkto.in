@@ -1,0 +1,143 @@
+openapi: 3.0.0
+info:
+  title: lnkto.in
+  version: 1.0.0
+servers:
+- url: https://lnkto.in
+paths:
+  /:
+    get:
+      x-yc-apigateway-integration:
+        type: http
+        url: http://lnktoin.website.yandexcloud.net/index.html
+        method: GET
+        timeouts:
+          connect: 0.5
+          read: 5
+      responses:
+        200:
+          description: Frontend HTML page
+      summary: Returns frontend index page
+      tags:
+      - Frontend
+    post:
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4eib8196rkqco0in4gc
+        tag: $latest
+      operationId: shorten
+      requestBody:
+        content:
+          application/json:
+            example:
+              url: 'https://www.eff.org/'
+            schema:
+              properties:
+                url:
+                  type: string
+              type: object
+        description: Shortening a provided link
+        required: true
+      responses:
+        201:
+          content:
+            application/json:
+              example:
+                success: true
+                url: 'https://lnkto.in/abcdef'
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  url:
+                    type: string
+                type: object
+          description: Successfully shortened
+        400:
+          content:
+            application/json:
+              example:
+                success: false
+                errorCode: 'EINCORRECT'
+                errorMessage: 'Incorrect URL provided'
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  errorMessage:
+                    type: string
+                  errorCode:
+                    type: string
+                type: object
+          description: Incorrect URL provided
+      summary: Shortens a link
+      tags:
+      - Link
+  /api:
+    get:
+      x-yc-apigateway-integration:
+        type: http
+        url: http://lnktoin.website.yandexcloud.net/api.html
+        method: GET
+        timeouts:
+          connect: 0.5
+          read: 5
+      responses:
+        200:
+          description: Frontend API documentation page
+      summary: Returns frontend API documentation page
+      tags:
+      - Frontend
+  /{linkId}:
+    get:
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4eib8196rkqco0in4gc
+        tag: $latest
+      parameters:
+      - description: Identifier of shortened link
+        explode: false
+        in: path
+        name: linkId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        301:
+          description: Shortened link found, redirection to origin
+        404:
+          content:
+            application/json:
+              example:
+                success: false
+                errorCode: 'ENOTFOUND'
+                errorMessage: 'URL is not found'
+              schema:
+                type: object
+                properties:
+                  success: 
+                    type: boolean
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+          description: Shortened link is not found
+      summary: Retrives original link by redirection
+      tags:
+      - Link
+  /site.webmanifest:
+    get:
+      x-yc-apigateway-integration:
+        type: http
+        url: http://lnktoin.website.yandexcloud.net/site.webmanifest
+        method: GET
+        timeouts:
+          connect: 0.5
+          read: 5
+      responses:
+        200:
+          description: Web Site Manifest
+      summary: Returns site.webmanifest file
+      tags:
+      - Frontend

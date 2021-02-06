@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Link shortener doing one thing well">
+  <link rel="shortcut icon" type="image/jpg" href="https://lnktoin.website.yandexcloud.net/icons/favicon-32x32.png"/>
+  <title>lnkto.in</title>
+  <style>
+    body {
+      display: grid; 
+      font-family: monospace;
+      height: 100vh;
+      margin: 0;
+    }
+
+    @media screen and (max-width: 576px) {
+      main { width: 90% };
+    }
+
+    @media screen and (min-width: 576px) {
+      main { width: 50%; }
+    }
+
+    main {
+      place-self: center;
+    }
+
+    form {
+      display: flex;
+      align-items: stretch;
+    }
+
+    #shorten-input {
+      border: none;
+      border-bottom: 2px solid #444;
+      font-family: monospace;
+      height: 2.5rem;
+      padding-right: +1rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    #shorten-input:focus, #shorten-input:invalid, #shorten-input:required {
+      outline: none;
+      box-shadow: none;
+    }
+
+    #shorten-button {
+      background: none;
+      border: 2px solid #444;
+      border-radius: 0;
+      cursor: pointer;
+      font-size: 1.5rem;
+      width: 3rem;
+    }
+
+    #shorten-button:focus {
+      outline: none;
+    }
+    
+    a {
+      color: inherit;
+      font-weight: 700;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <form action="/" method="post" id="shorten-form">
+      <input type="url" id="shorten-input" placeholder="..." autocomplete="off" autofocus required>
+      <button type="submit" id="shorten-button">➔</button>
+    </form>
+    <p>
+      <a href="/api" target="_blank" rel="noopener" alt="API documentation">API</a> &bullet; 
+      <a href="tg://resolve?domain=lnktobot" target="_blank" rel="noopener" alt="Link to Telegram bot">Telegram</a> &bullet; 
+      <a href="https://github.com/imcatwhocode/lnkto.in" target="_blank" rel="noopener" alt="Link to source code on Github">Github</a>
+    </p>
+  </main>
+  <script>
+
+    /**
+     * Flag preventing repeating execution
+     * @type {Boolean}
+     */
+    let requestMutex = false;
+
+    /**
+     * Form submit button
+     * @type {DOMElement}
+     */
+    const submitButton = document.getElementById('shorten-button');
+
+    /**
+     * Animation characters sequence
+     * @type {String[]}
+     */
+    const submitButtonAnimationSequence = ['⧕', '⧑', '⦻', '⦁'];
+    
+    /**
+     * Current position in animation sequence
+     * @type {Number}
+     */
+    let submitButtonAnimationPosition = 0;
+
+    // Animation "coroutine"
+    setInterval(() => {
+
+      // Request is in progress
+      if (requestMutex) {
+
+        submitButton.innerHTML = submitButtonAnimationSequence[submitButtonAnimationPosition];
+        submitButtonAnimationPosition += 1;
+        if (submitButtonAnimationPosition === submitButtonAnimationSequence.length)
+          submitButtonAnimationPosition = 0;
+        return;
+
+      }
+
+      // Reset everything once after request finish
+      if (submitButton.innerHTML !== '➔') {
+        submitButton.innerHTML = '➔';
+        submitButtonAnimationPosition = 0;
+      }
+
+    }, 250);
+
+    // Handling form submit action
+    document
+      .getElementById('shorten-form')
+      .addEventListener('submit', async event => {
+
+        // Prevent form from being submit (noscript fallback)
+        event.preventDefault();
+
+        // Avoid duplicating execution
+        if (requestMutex) { return; }
+        requestMutex = true;
+
+        const inputField = document.getElementById('shorten-input');
+
+        try {
+
+          // Submit data using fetch
+          const req = await fetch('.', {
+            method: 'post',
+            mode: 'same-origin',
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify({ url: inputField.value })
+          });
+
+          // Waiting for response, parsing it as JSON
+          const res = await req.json();
+
+          // Show an error, if status code is not "Created"
+          if (req.status !== 201)
+            throw new Error(res.errorCode ? `${res.errorCode}: ${res.errorMessage}` : 'Internal Error');
+
+          // Paste generated link into text field
+          inputField.value = res.url;
+          inputField.focus();
+          inputField.select();
+          requestMutex = false;
+          return;
+
+        } catch (err) {
+
+          // Displaying errors in alerts for this time
+          alert(err.message);
+          requestMutex = false;
+          return;
+
+        }
+
+      });
+  </script>
+</body>
+</html>

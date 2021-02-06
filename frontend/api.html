@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Link shortener doing one thing well">
+  <link rel="shortcut icon" type="image/jpg" href="https://lnktoin.website.yandexcloud.net/icons/favicon-32x32.png"/>
+  <title>API — lnkto.in</title>
+  <style>
+    body {
+      display: grid; 
+      font-family: monospace;
+      height: 100vh;
+      margin: 0;
+    }
+
+    @media screen and (max-width: 576px) {
+      main { width: 90% };
+    }
+
+    @media screen and (min-width: 576px) {
+      main { width: 50%; }
+    }
+
+    main {
+      place-self: center;
+    }
+
+    a {
+      color: inherit;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    hr {
+      border: 1px solid #ddd;
+    }
+
+    code {
+      display: inline-block;
+      padding: 1rem;
+      background-color: #333;
+      color: #ccc;
+    }
+    code > b {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <heading>
+      <h1>lnkto.in ➔ API</h1>
+    </heading>
+    <hr>
+    <section>
+      <h2>∗ Resolve original link</h2>
+      <article>
+        <p>Make a <b>GET</b> call to <b>https://lnkto.in/{id}</b>, where <b>{id}</b> is a unique link identifier.</p>
+        <p>
+          <b>OK ➔</b> <i>301 Moved Permanently</i> status with original link in <b>Location</b> header.
+          <br>
+          <b>Not Found ➔</b> <i>404 Not Found</i> status with JSON-formatted error in body.
+        </p>
+        <code>
+          # Resolving original location in Terminal with cURL <br><br>
+          $ curl -s -D - <b>https://lnkto.in/123456</b> | grep Location<br>
+          Location: <b>https://google.com</b>
+        </code>
+      </article>
+    </section>
+    <br>
+    <hr>
+    <section>
+      <h2>∗ Generate short link</h2>
+      <article>
+        <p>Make a <b>POST</b> call to <b>https://lnkto.in</b>, sending <b>"url"</b> property in JSON body.</p>
+        <p>
+          <b>OK ➔</b> <i>201 Created</i> status with shorten link in <b>"url"</b> body property.
+          <br>
+          <b>Fail ➔</b> <i>400 Bad Request</i> status with <b>"errorCode"</b> and <b>"errorMessage"</b> properties for debugging.
+        </p>
+        <code>
+          # Shortening link in Terminal with cURL <br><br>
+          $ curl -X POST \<br>
+          &nbsp;&nbsp;--header "Content-Type: application/json" \<br>
+          &nbsp;&nbsp;--data '{"url": "<b>https://www.calvertjournal.com</b>"}' \<br>
+          &nbsp;&nbsp;https://lnkto.in<br><br>
+          { "success": true, "url": "<b>https://lnkto.in/uoqorp</b>" }
+        </code>
+      </article>
+    </section>
+    <br>
+    <hr>
+    <section>
+      <h2>∗ OpenAPI</h2>
+      <article>
+        <p>Full OpenAPI Specification is available on <a href="https://github.com/imcatwhocode/lnkto.in/tree/api-gateway/lnktoin.yaml">Github</a>.</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
